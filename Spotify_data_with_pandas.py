@@ -12,12 +12,18 @@ df_two_ms = df.loc[df['msPlayed'] > 120000]
 # df_over_two_mins = df_two_ms.set_index('artistName').drop('msPlayed', axis=1).sort_values(by='trackName')
 df_over_two_mins = df_two_ms.set_index('artistName').sort_values(by='trackName')
 
-# --- # NOT USED
-# print(df_over_two_mins.head(10))
-# df_time = df_over_two_mins.reset_index()
-# df_time = df_time.set_index(['artistName', 'endTime']).sort_values(['artistName', 'endTime'])
+# --- # When do I listen to music? TODO use grouper and timedate in stead?
+time_series = df_two_ms['endTime'].str[11:13].value_counts().sort_index()
 
+plt.plot(time_series.index, time_series.values)
+plt.grid(visible=True, axis='x')
+plt.ylabel('Antall avspillinger')
+plt.title('Når på døgnet?')
+plt.show()
+
+# --- # Groupby artist
 gr_for_time = df_over_two_mins.groupby('artistName')
+
 # --- # Gloryhammer
 df_gh_time = gr_for_time.get_group('Gloryhammer').sort_values('endTime').drop('msPlayed', axis=1)
 df_gh_time["endTime"] = pd.to_datetime(df_gh_time["endTime"])
@@ -64,13 +70,11 @@ handles = [plt.Rectangle((0,0),1,1, color=colors[label]) for label in labels]
 plt.legend(handles, labels)
 plt.show()
 
-# TODO time of day
 
-
-exit()
 # --- # All bands and top ten bands
 list_all_bands = df.loc[:, 'artistName'].unique()
 top_ten_artists = df_over_two_mins.index.value_counts().head(10)
+# TODO how many times have I listened to their songs?
 
 # --- # Various functions
 def songs_by_one_band(group, band_name):
